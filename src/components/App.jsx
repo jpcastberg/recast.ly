@@ -2,15 +2,37 @@ import Search from './Search.js';
 import VideoList from './VideoList.js';
 import VideoPlayer from './VideoPlayer.js';
 import exampleVideoData from '../data/exampleVideoData.js';
+import searchYouTube from '../lib/searchYouTube.js';
 
 class App extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      video: exampleVideoData[0]
+      videos: exampleVideoData,
+      currentVideo: exampleVideoData[0]
     };
   }
+
+  updateVideo(video) {
+    this.setState({
+      currentVideo: video 
+    });
+  }
+
+  search(query) {
+    searchYouTube({
+      maxResults: 5,
+      part: 'snippet',
+      q: query,
+      type: ''
+    }, (data) => {
+      this.setState({
+        videos: data
+      });
+    });
+  }
+  
 
   render() {
     
@@ -24,10 +46,10 @@ class App extends React.Component {
         </nav>
         <div className="row">
           <div className="col-md-7">
-            <VideoPlayer video={this.state.video}/>
+            <VideoPlayer video={this.state.currentVideo}/>
           </div>
           <div className="col-md-5">
-            <VideoList videos={exampleVideoData}/>
+            <VideoList updateVideo={this.updateVideo.bind(this)} videos={this.state.videos}/>
           </div>
         </div>
       </div>
